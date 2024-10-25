@@ -1,60 +1,63 @@
-# Test Database
-toys = [
-    {"name": "Toy1", "category": "Category1", "price": 25.15, "amount": 15},
-    {"name": "Toy2", "category": "Category2", "price": 13.13, "amount": 3},
-    {"name": "Toy3", "category": "Category1", "price": 25.23, "amount": 11}
+# print("HEllO WORLD")
+
+cars = [
+    {"name": "Car1", "mark": "Mark1", "price": 1290000, "speed": 150},
+    {"name": "Car2", "mark": "Mark2", "price": 2455566, "speed": 300},
+    {"name": "Car3", "mark": "Mark1", "price": 1234800, "speed": 240}
 ]
 
 # Search
-def search_toys(name: str = "", category: str = "", price: float = 0.00, amount: float = 0) -> list:
+def search_cars(name: str = "", mark: str = "", price: float = 0.00, speed: float = 0) -> list:
     result: list = []
     domain: list = []
     if name:
         domain.append(name)
-    if category:
-        domain.append(category)
+    if mark:
+        domain.append(mark)
     if price:
         domain.append(price)
-    if amount:
-        domain.append(amount)
-    for toy in toys:
-        toy_values = toy.values()
-        if set(domain).issubset(set(toy_values)):
-            result.append(toy)
+    if speed:
+        domain.append(speed)
+    for car in cars:
+        car_values = car.values()
+        if set(domain).issubset(set(car_values)):
+            result.append(car)
     return result
 
 # Create
-def create_toy(new_toy: dict) -> dict:
-    toys.append(new_toy)
-    return new_toy
+def create_car(new_car: dict) -> dict:
+    cars.append(new_car)
+    return new_car
 
 # Read
-def read_toys() -> list:
-    return toys
+def read_cars() -> list:
+    return cars
 
-def read_toy(toy: dict) -> list:
+def read_car(car: dict) -> list:
     result: list = []
-    search_result = search_toys(toy.get("name"), toy.get("category"), toy.get("price"), toy.get("amount"))
-    for toy in search_result:
-        result.append(toy)
+    search_result = search_cars(car.get("name"), car.get("mark"), car.get("price"), car.get("speed"))
+    for car in search_result:
+        result.append(car)
     return result
 
 # Update
-def update_toy(name: str, new_toy: dict = {}) -> dict:
-    toy = search_toys(name)[0]
-    index = toys.index(toy)
-    toys.remove(toy)
-    new_toy = {}
-    for key in toy:
-        if key in new_toy:
-            toy[key] = new_toy[key]
-    toys.insert(index, toy)
-    return toy
+def update_car(name: str, new_car: dict = {}) -> dict:
+    car = search_cars(name)[0]
+    index = cars.index(car)
+    cars.remove(car)
+    for key in car:
+        if key in new_car:
+            car[key] = new_car[key]
+    cars.insert(index, car)
+    return car
 
-# Delete
-def delete_toy(name: str) -> dict:
-    toy = search_toys(name)[0]
-    toys.remove(toy)
-    return toy
+        # Delete
+def delete_car(name: str) -> dict:
+    carr = search_cars(name)[0]
+    cars.remove(carr)
+    return carr
 
-
+# Тест
+print(read_cars())
+print(update_car(name="Car1",new_car={"price": 312456}))
+print(read_cars())
