@@ -1,63 +1,56 @@
-# print("HEllO WORLD")
+from sqlalchemy import create_engine, insert, delete, update, select
+from workers import read_csv, serializer
+from models import Base, Car, Toy
 
-cars = [
-    {"name": "Car1", "mark": "Mark1", "price": 1290000, "speed": 150},
-    {"name": "Car2", "mark": "Mark2", "price": 2455566, "speed": 300},
-    {"name": "Car3", "mark": "Mark1", "price": 1234800, "speed": 240}
-]
-
-# Search
-def search_cars(name: str = "", mark: str = "", price: float = 0.00, speed: float = 0) -> list:
-    result: list = []
-    domain: list = []
-    if name:
-        domain.append(name)
-    if mark:
-        domain.append(mark)
-    if price:
-        domain.append(price)
-    if speed:
-        domain.append(speed)
-    for car in cars:
-        car_values = car.values()
-        if set(domain).issubset(set(car_values)):
-            result.append(car)
-    return result
+engine = create_engine("sqlite:///./db.sqlite3", echo = True)
+Base.metadata.create_all(engine)
 
 # Create
-def create_car(new_car: dict) -> dict:
-    cars.append(new_car)
+def create(table, new_car: dict) -> dict:
+    with engine.connect() as conn:
+        stmt = insert(table).values(new_car)
+        conn.execute(stmt)
+        conn.commit()
     return new_car
 
 # Read
-def read_cars() -> list:
-    return cars
+def read(table) -> list:
+    rows: list = []
+    data: list = []
+    with engine.connect() as conn:
+        stmt = select(table)
+        rows = conn.execute(stmt)
+    for row in rows:
+        data.append(row)
+    return data
 
-def read_car(car: dict) -> list:
-    result: list = []
-    search_result = search_cars(car.get("name"), car.get("mark"), car.get("price"), car.get("speed"))
-    for car in search_result:
-        result.append(car)
-    return result
+def read(table, name: str) -> list:
+    rows: list = []
+    data: list = []
+    with engine.connect() as conn:
+        stmt = select(table).where(table.name == name)
+        rows = conn.execute(stmt)
+    for row in rows:
+        data.append(row)
+    return data
 
 # Update
-def update_car(name: str, new_car: dict = {}) -> dict:
-    car = search_cars(name)[0]
-    index = cars.index(car)
-    cars.remove(car)
-    for key in car:
-        if key in new_car:
-            car[key] = new_car[key]
-    cars.insert(index, car)
-    return car
+def update(table, name: str, new_car: dict = {}) -> dict:
+    with engine.connect() as conn:
+        stmt = update(table).where(table.name == name).values(new_car)
+        conn.execute(stmt)
+        conn.commit()
+    return name
 
-        # Delete
-def delete_car(name: str) -> dict:
-    carr = search_cars(name)[0]
-    cars.remove(carr)
-    return carr
+# Delete
+def delete(table, name: str) -> dict:
+    with engine.connect() as conn:
+        stmt = delete(table).where(table.name == name)
+        conn.execute(stmt)
+        conn.commit()
+    return name
 
-# Тест
-print(read_cars())
-print(update_car(name="Car1",new_car={"price": 312456}))
-print(read_cars())
+data = read_csv("data.csv")
+records = serializer(data, ["name", "mark", "price", "speed"])
+for record in records:
+    create(Car, record)
