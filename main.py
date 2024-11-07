@@ -50,7 +50,3 @@ def delete(table, name: str) -> dict:
         conn.commit()
     return name
 
-data = read_csv("data.csv")
-records = serializer(data, ["name", "mark", "price", "speed"])
-for record in records:
-    create(Car, record)
