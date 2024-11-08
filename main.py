@@ -35,7 +35,7 @@ def read(table, name: str) -> list:
     return data
 
 # Update
-def update(table, name: str, new_car: dict = {}) -> dict:
+def write(table, name: str, new_car: dict = {}) -> dict:
     with engine.connect() as conn:
         stmt = update(table).where(table.name == name).values(new_car)
         conn.execute(stmt)
@@ -43,7 +43,7 @@ def update(table, name: str, new_car: dict = {}) -> dict:
     return name
 
 # Delete
-def delete(table, name: str) -> dict:
+def remove(table, name: str) -> dict:
     with engine.connect() as conn:
         stmt = delete(table).where(table.name == name)
         conn.execute(stmt)
